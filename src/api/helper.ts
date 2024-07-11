@@ -1,6 +1,8 @@
 // import { AxiosError } from 'axios';
 import { addArticle } from './article';
 import type { Article } from './types';
+import getStorage from './storage';
+import type { StorageValue } from "./storage"
 // shared/src/api/api.ts
 import axios from 'axios';
 import type { Method } from 'axios';
@@ -9,38 +11,43 @@ const BASE_API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export type RequestData = string | number | object | undefined;
 export interface ResponseData<T = any> {
-  success: boolean;
-  message: string;
-  data: T;
+    success: boolean;
+    message: string;
+    data: T;
 }
 
+const storage = getStorage();
 export const apiRequest = async <T>(
-  url: string,
-  method: Method,
-  data?: RequestData,
-  // accessToken?: string
+    url: string,
+    method: Method,
+    data?: RequestData,
 ): Promise<ResponseData<T>> => {
-  const accessToken = "";
-  try {
-    const response = await axios({
-      url: `${BASE_API_URL}${url}`,
-      method,
-      data,
-      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
-    });
-
-    if (response.status !== 200 && response.status !== 201) {
-      throw new Error(response.statusText);
+    const accessToken = await storage.getItem<StorageValue>('accessToken');
+    let headers: Record<string, string> = {};
+    if (accessToken && typeof accessToken === 'string') {
+        headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    return response.data;
-  } catch (error: any) {
-    if (error && error.response) {
-      throw error.response.data;
-    } else {
-      throw new Error('An unknown error occurred');
+    try {
+        const response = await axios({
+            url: `${BASE_API_URL}${url}`,
+            method,
+            data,
+            headers,
+        });
+
+        if (response.status !== 200 && response.status !== 201) {
+            throw new Error(response.statusText);
+        }
+
+        return response.data;
+    } catch (error: any) {
+        if (error && error.response) {
+            throw error.response.data;
+        } else {
+            throw new Error('An unknown error occurred');
+        }
     }
-  }
 };
 
 export function fetchMainArticleElement() {
@@ -106,7 +113,7 @@ export function fetchMainArticleContent(): Article {
 
     // make return as an Article type
     return {
-       ...info,
+        ...info,
         id: 0,
         user_id: null,
         word_count: 0,
@@ -117,7 +124,7 @@ export function fetchMainArticleContent(): Article {
     };
 }
 
-export function addArticleFromDocument(){
+export function addArticleFromDocument() {
     const article = fetchMainArticleContent();
     article.paragraphs = Object.values(article.paragraphs);
     console.log("fetch article: ");
@@ -150,10 +157,10 @@ export function collectArticleInfo() {
     const getSiteIcon = (): string | null => {
         // Query for the link element with rel='icon'
         const linkElement = document.querySelector("link[rel~='icon']");
-      
+
         // Use a type assertion to cast it to HTMLLinkElement
         const siteIcon = linkElement ? (linkElement as HTMLLinkElement).href : null;
-      
+
         return siteIcon;
     };
     // Collect the site icon (assuming it's stored in a link tag with rel='icon')
@@ -180,10 +187,10 @@ export function cleanWord(word: string): string {
 export const getQueryParams = (): { [key: string]: string } => {
     const params = new URLSearchParams(window.location.search);
     const result: { [key: string]: string } = {};
-  
+
     params.forEach((value, key) => {
-      result[key] = value;
+        result[key] = value;
     });
-    
+
     return result;
-  };
+};

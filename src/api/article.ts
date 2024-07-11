@@ -7,7 +7,7 @@ export const addArticle = async (data = {}) => {
 };
 
 export const getArticle = async (articleId: number): Promise<Article> => {
-    const response = await apiRequest<Article>(`/articles/${articleId}`, 'GET');
+    const response = await apiRequest<Article>(`/reading_articles/${articleId}`, 'GET');
     if (response.success) {
         return response.data;
     } else {
@@ -16,5 +16,5 @@ export const getArticle = async (articleId: number): Promise<Article> => {
 };
 
 export const getArticles = async (): Promise<ResponseData<Article[]>> => {
-    return apiRequest<Article[]>(`/articles/list`, 'GET');
+    return apiRequest<Article[]>(`/reading_articles/list`, 'GET');
 };
