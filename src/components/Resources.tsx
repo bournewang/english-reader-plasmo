@@ -1,5 +1,6 @@
 import React from 'react';
-import readingResources from '~api/resources'
+import readingResources from '../api/resources'
+// import type { Resource } from '../api/types';
 
 const Resources = () => {
     return (

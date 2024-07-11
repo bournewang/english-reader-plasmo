@@ -1,24 +1,26 @@
-import React, { useState } from "react"
-import type { Definition, Phonetic, Meaning, DictDetail } from "~api/dict"
-import { speakText } from "~api/tts";
+import React from "react"
+import type { Definition, Phonetic, Meaning, DictDetail } from "../api/types"
+import { speakText } from "../api/tts";
 
-const DictPanel = ({ detail }) => {
-  const playPhoneticAudio = (event) => {
-    const audio = event.target.nextElementSibling;
+const DictPanel: React.FC<{detail: DictDetail|null}> = ({ detail }) => {
+// const DictPanel = ({ detail }) => {
+  const playPhoneticAudio = (event: React.MouseEvent<HTMLSpanElement>) => {
+    const audio = event.currentTarget.nextElementSibling as HTMLAudioElement;
     if (audio && audio.tagName === "AUDIO") {
       audio.play();
     }
   }
-  const speechExample = (event) => {
-    const paragraph = event.target.parentElement;
-    const paragraphText = paragraph.innerText.replace(event.target.innerText, ''); // Exclude the speaker icon text
+  const speechExample = (event: React.MouseEvent<HTMLSpanElement>) => {
+    const paragraph = event.currentTarget.parentElement;
+    if (!paragraph) return;
+    const paragraphText = paragraph.innerText.replace(event.currentTarget.innerText, ''); // Exclude the speaker icon text    
     speakText(paragraphText)
   }
   return (
     detail && <div id="details-section">
       <h2 className="text-lg font-bold text-blue-600">{detail.word}</h2>
       <div className="phonetics flex space-x-2 text-base">
-        {detail.phonetics && detail.phonetics.length > 0 && detail.phonetics.map((phonetic: Phonetic, index) => (
+        {detail.phonetics && detail.phonetics.length > 0 && detail.phonetics.map((phonetic: Phonetic, index: number) => (
           <p key={index}>
             {phonetic.text}
             {phonetic.audio && (
@@ -30,11 +32,11 @@ const DictPanel = ({ detail }) => {
           </p>
         ))}
       </div>
-      {detail.meanings && detail.meanings.length > 0 && detail.meanings.map((meaning: Meaning, meaningIndex) => (
+      {detail.meanings && detail.meanings.length > 0 && detail.meanings.map((meaning: Meaning, meaningIndex: number) => (
         <div className="meaning" key={meaningIndex}>
           <p className="partOfSpeech">{meaning.partOfSpeech}: {detail.word}</p>
           <ol>
-            {meaning.definitions.map((definition: Definition, definitionIndex) => (
+            {meaning.definitions.map((definition: Definition, definitionIndex: number) => (
               <li key={definitionIndex}>
                 {definition.definition}
                 {definition.synonyms && definition.synonyms.length > 0 && (
@@ -56,7 +58,7 @@ const DictPanel = ({ detail }) => {
         <div className="sourceUrl">
           <strong>Source:</strong>
           <ul>
-            {detail.sourceUrls.map((url, urlIndex) => (
+            {detail.sourceUrls.map((url:string, urlIndex: number) => (
               <li key={urlIndex}><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>
             ))}
           </ul>

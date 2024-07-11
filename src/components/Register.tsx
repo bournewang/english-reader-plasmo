@@ -1,6 +1,7 @@
-import React, { useState, FormEvent } from 'react';
-import { registerUser } from '~api/user';
-import "~styles/tailwind.css"
+import React, { useState } from 'react';
+import type { FormEvent } from 'react';
+import { registerUser } from '../api/user';
+import "../styles/tailwind.css"
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -13,7 +14,12 @@ const Register: React.FC = () => {
             await registerUser(email, password);
             setMessage('Registration successful!');
         } catch (error) {
-            setMessage(error.message || 'Registration failed');
+            if (error instanceof Error) {
+                // If error is of type Error, it has a message property
+                setMessage(error.message || 'Registration failed');
+              } else {
+                setMessage('Registration failed');
+              }
         }
     };
 

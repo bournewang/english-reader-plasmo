@@ -1,11 +1,53 @@
-// import axios, { AxiosRequestConfig } from 'axios';
+// import { AxiosError } from 'axios';
 import { addArticle } from './article';
-import type { Article } from './article';
+import type { Article } from './types';
+// shared/src/api/api.ts
+import axios from 'axios';
+import type { Method } from 'axios';
+
+const BASE_API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+export type RequestData = string | number | object | undefined;
+export interface ResponseData<T = any> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export const apiRequest = async <T>(
+  url: string,
+  method: Method,
+  data?: RequestData,
+  // accessToken?: string
+): Promise<ResponseData<T>> => {
+  const accessToken = "";
+  try {
+    const response = await axios({
+      url: `${BASE_API_URL}${url}`,
+      method,
+      data,
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    });
+
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error(response.statusText);
+    }
+
+    return response.data;
+  } catch (error: any) {
+    if (error && error.response) {
+      throw error.response.data;
+    } else {
+      throw new Error('An unknown error occurred');
+    }
+  }
+};
+
 export function fetchMainArticleElement() {
     // Check for common semantic tags
     const commonTags = ['article', 'main', 'section'];
     for (const tag of commonTags) {
-        console.log("detech tag ", tag)
+        console.log("detect tag ", tag)
         const elements = document.getElementsByTagName(tag);
         console.log("length: ", elements.length)
         if (elements.length > 0) {
@@ -32,12 +74,12 @@ export function fetchMainArticleElement() {
     }
 
     // Check for the largest text block
-    const allElements = document.body.getElementsByTagName('*');
-    let largestElement = null;
+    const allElements = Array.from(document.body.getElementsByTagName('*'));
+    let largestElement: Element | null = null;
     let maxTextLength = 0;
     for (const element of allElements) {
-        if (element.offsetWidth > 0 && element.offsetHeight > 0) { // Only consider visible elements
-            const textLength = element.textContent.length;
+        if (element instanceof HTMLElement && element.offsetWidth > 0 && element.offsetHeight > 0) { // Only consider visible elements
+            const textLength = element.textContent?.length || 0;
             if (textLength > maxTextLength) {
                 maxTextLength = textLength;
                 largestElement = element;
@@ -47,69 +89,50 @@ export function fetchMainArticleElement() {
 
     return largestElement; // Return the largest text block element
 }
-
-// make fetchMainArticleContent return an Article decleration
-export function fetchMainArticleContent(): Article 
-{
+// make fetchMainArticleContent return an Article declaration
+export function fetchMainArticleContent(): Article {
     const articleElement = fetchMainArticleElement()
+    if (!articleElement) {
+        throw new Error('Could not find article element');
+    }
     const ps = articleElement.querySelectorAll("p");
-    const paragraphs = {}
-    let i = 1
+    const paragraphs: { [key: string]: string } = {};
+    let i = 1;
     ps.forEach((p) => {
-        paragraphs[(i++).toString()] = p.innerText
-    })
+        paragraphs[(i++).toString()] = p.innerText;
+    });
 
-    const info = collectArticleInfo()
+    const info = collectArticleInfo();
 
-    // make return as a Article type
+    // make return as an Article type
     return {
        ...info,
-        id: null,
+        id: 0,
+        user_id: null,
         word_count: 0,
         site: "",
         created_at: "",
         paragraphs,
         unfamiliar_words: []
-    }
+    };
 }
 
 export function addArticleFromDocument(){
-    const article = fetchMainArticleContent()
-    article.paragraphs = Object.values(article.paragraphs)
-    console.log("fetch article: ")
-    console.log(article)
-    return addArticle(article)
+    const article = fetchMainArticleContent();
+    article.paragraphs = Object.values(article.paragraphs);
+    console.log("fetch article: ");
+    console.log(article);
+    return addArticle(article);
 }
 
-import { api } from './api';
+// import { api } from './api';
 
-type RequestData = string | number | object | undefined;
-type ResponseData = {success: boolean, message: string, data: object};
-export const apiRequest = async (url: string, method: 'GET' | 'POST' | 'DELETE', data?: RequestData): Promise<ResponseData> => {
-    try {
-        const response = await api({
-            method,
-            url,
-            data,
-        });
-        if (response.status !== 200 && response.status !== 201) {
-            throw response;
-        }
-        return response.data;
-    } catch (error) {
-        throw error.response;
-    }
-};
-
-
-
-
-function getMetaContentByName(name) {
+function getMetaContentByName(name: string): string | null {
     const meta = document.querySelector(`meta[name='${name}']`);
     return meta ? meta.getAttribute('content') : null;
 }
 
-function getMetaContentByProperty(property) {
+function getMetaContentByProperty(property: string): string | null {
     const meta = document.querySelector(`meta[property='${property}']`);
     return meta ? meta.getAttribute('content') : null;
 }
@@ -124,8 +147,17 @@ export function collectArticleInfo() {
     // Collect the site name (assuming it's stored in a meta tag or can be derived from the document title)
     let siteName = getMetaContentByProperty('og:site_name') || document.title;
 
+    const getSiteIcon = (): string | null => {
+        // Query for the link element with rel='icon'
+        const linkElement = document.querySelector("link[rel~='icon']");
+      
+        // Use a type assertion to cast it to HTMLLinkElement
+        const siteIcon = linkElement ? (linkElement as HTMLLinkElement).href : null;
+      
+        return siteIcon;
+    };
     // Collect the site icon (assuming it's stored in a link tag with rel='icon')
-    let siteIcon = document.querySelector("link[rel~='icon']") ? document.querySelector("link[rel~='icon']").href : null;
+    let siteIcon = getSiteIcon()
 
     // Fallbacks for when the data is not found
     author = author || "Unknown Author";
@@ -141,26 +173,17 @@ export function collectArticleInfo() {
     };
 }
 
-export function cleanWord(word: string)
-{
+export function cleanWord(word: string): string {
     return word.replace(/[.,/#?!$%^&*;:{}=\-_`~()]/g, "").toLowerCase();
 }
 
-export function getHashParams() {
-    const hash = window.location.hash.substr(1); // Get the part after the '#'
-    const params = {};
-    hash.split('&').forEach(part => {
-        const [key, value] = part.split('=');
-        params[decodeURIComponent(key)] = decodeURIComponent(value);
-    });
-    return params;
-}
-
-export function getQueryParams() {
+export const getQueryParams = (): { [key: string]: string } => {
     const params = new URLSearchParams(window.location.search);
-    const result = {};
-    for (const [key, value] of params.entries()) {
-        result[key] = value;
-    }
+    const result: { [key: string]: string } = {};
+  
+    params.forEach((value, key) => {
+      result[key] = value;
+    });
+    
     return result;
-}
+  };

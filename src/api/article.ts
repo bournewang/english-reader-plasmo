@@ -1,11 +1,13 @@
 import { apiRequest } from './helper';
+import type { ResponseData } from './helper';
+import type { Article } from './types';
 
 export const addArticle = async (data = {}) => {
     return apiRequest('/articles/create', 'POST', data);
 };
 
-export const getArticle = async (articleId: number) => {
-    const response = await apiRequest(`/articles/${articleId}`, 'GET');
+export const getArticle = async (articleId: number): Promise<Article> => {
+    const response = await apiRequest<Article>(`/articles/${articleId}`, 'GET');
     if (response.success) {
         return response.data;
     } else {
@@ -13,21 +15,6 @@ export const getArticle = async (articleId: number) => {
     }
 };
 
-export const getArticles = async () => {
-    return apiRequest(`/articles/list`, 'GET');
+export const getArticles = async (): Promise<ResponseData<Article[]>> => {
+    return apiRequest<Article[]>(`/articles/list`, 'GET');
 };
-
-export interface Article {
-    'id': number | null;
-    'title': string | null;
-    'word_count': number | null;
-    'author': string | null,
-    'url': string | null,
-    'site': string | null,
-    'site_name': string | null,
-    'site_icon': string | null,
-    'created_at': string | null,
-    // paragraphs is an mapping with paragraph id to paragraph text
-    'paragraphs': object,
-    'unfamiliar_words': string[];
-}

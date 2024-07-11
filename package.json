@@ -6,12 +6,14 @@
   "author": "Wang Xiaopei <xiaopei0206@icloud.com>",
   "scripts": {
     "dev": "plasmo dev && npm run lint",
-    "build": "plasmo build && cp src/styles/*.css build/chrome-mv3-prod/ && npm run zip",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "zip": "cd build/chrome-mv3-prod && zip -r english-reader.zip . && mv english-reader.zip ~/Downloads",
     "build:css": "cp src/styles/reader.css build/chrome-mv3-dev/ && npx tailwindcss -i tailwind.css -o src/styles/tailwind.css && cp src/styles/tailwind.css build/chrome-mv3-dev/tailwind.css",
-    "lint": "eslint src/**/*.js src/**/*.jsx",
-    "lint:fix": "eslint src/**/*.js src/**/*.jsx --fix",
-    "package": "plasmo package"
+    "lint": "eslint src/**/*.ts src/**/*.tsx",
+    "lint:fix": "eslint src/**/*.ts src/**/*.tsx --fix",
+    "package": "plasmo package",
+    "copy-styles": "copyfiles -u 1 src/styles/* dist/"
   },
   "dependencies": {
     "@eslint/compat": "^1.1.0",
@@ -21,17 +23,26 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@tailwindcss/typography": "^0.5.13",
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "axios": "^1.7.2",
     "eslint": "^9.6.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.34.3",
     "globals": "^15.8.0",
     "plasmo": "0.87.2",
+    "prettier": "^3.3.2",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native-safe-area-context": "^4.10.5",
     "react-native-screens": "^3.32.0",
     "react-router-dom": "latest",
+    "react-scripts": "^5.0.1",
     "tailwindcss": "^3.4.4",
+    "tsc": "^2.0.4",
+    "typescript": "^5.5.3",
     "typescript-eslint": "^7.15.0"
   },
   "devDependencies": {
@@ -40,9 +51,16 @@
     "@types/node": "20.11.5",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
     "autoprefixer": "^10.4.19",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "postcss": "^8.4.38",
-    "prettier": "3.2.4",
+    "prettier": "^3.3.2",
     "tailwindcss": "latest",
     "typescript": "5.3.3"
   },
@@ -66,6 +84,18 @@
           "<all_urls>"
         ]
       }
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   }
 }

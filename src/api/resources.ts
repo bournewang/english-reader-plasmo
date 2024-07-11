@@ -1,4 +1,14 @@
-export default {
+interface Resource {
+    name: string;
+    icon_url: string;
+    url: string;
+  }
+  
+interface ReadingResources {
+[category: string]: Resource[];
+}
+
+const readingResources: ReadingResources =  {
     "news": [
         {
             "name": "BBC News",
@@ -214,3 +224,5 @@ export default {
         }
     ]
 }
+
+export default readingResources

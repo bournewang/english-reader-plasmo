@@ -1,8 +1,9 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState } from 'react';
+import type { FormEvent } from 'react';
 import Register from './Register';
-import { loginUser } from '~api/user';
-import { useUser } from '~contexts/UserContext';
-import "~styles/tailwind.css"
+import { loginUser } from '../api/user';
+import { useUser } from '../contexts/UserContext';
+import "../styles/tailwind.css"
 
 const Login: React.FC = () => {
     // const { setEmail, error, setError } = useAuth();

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_API_URL = process.env.PLASMO_PUBLIC_BASE_API_URL;
+const BASE_API_URL = process.env.REACT_APP_API_URL;
 
 const api = axios.create({
   baseURL: BASE_API_URL,

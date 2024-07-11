@@ -1,19 +1,18 @@
 {
-  "extends": "plasmo/templates/tsconfig.base",
-  "exclude": [
-    "node_modules"
-  ],
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["dom", "es2017"],
+    "module": "commonjs",
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
   "include": [
+    "global.d.ts",
     ".plasmo/index.d.ts",
     "./src/**/*.js",
     "./src/**/*.ts",
-    "./src/**/*.tsx"],
-  "compilerOptions": {
-    "paths": {
-      "~*": [
-        "./src/*"
-      ]
-    },
-    "baseUrl": "."
-  }
+    "./src/**/*.tsx"
+  ],
 }

@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import locales from '~api/locales';
-import { updateLocale } from '~api/user';
-import { useUser } from '~contexts/UserContext';
-import { useLocale } from '~contexts/LocaleContext';
+import React, { useState } from 'react';
+import type { ChangeEvent, KeyboardEvent } from'react';
+import locales from '../api/locales';
+import { updateLocale } from '../api/user';
+import { useUser } from '../contexts/UserContext';
+import { useLocale } from '../contexts/LocaleContext';
+
+interface Locale {
+  locale: string;
+  country: string;
+  flag: string;
+}
 
 const LocaleSelector = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -11,12 +18,12 @@ const LocaleSelector = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { user } = useUser();
 
-    const handleSearch = (event) => {
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
         setIsOpen(true);
     };
 
-    const handleSelect = (locale) => {
+    const handleSelect = (locale: Locale) => {
         setLocale(locale);
         setSearchTerm('');
         setIsOpen(false);
@@ -27,7 +34,7 @@ const LocaleSelector = () => {
         }
     };
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (!isOpen) return;
 
         if (event.key === 'ArrowDown') {

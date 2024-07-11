@@ -1,0 +1,12 @@
+export {default as Dashboard} from './Dashboard'; 
+export {default as DictPanel} from './DictPanel'; 
+export {default as Faq} from './Faq'; 
+export {default as History} from './History'; 
+export {default as Loading} from './Loading'; 
+export {default as LocaleSelector} from './LocaleSelector'; 
+export {default as Login} from './Login'; 
+export {default as Reader} from './Reader'; 
+export {default as Register} from './Register'; 
+export {default as Resources} from './Resources'; 
+export {default as Settings} from './Settings'; 
+export {default as WordHistory} from './WordHistory'; 

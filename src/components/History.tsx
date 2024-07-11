@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { getArticles, getArticle } from '~api/article';
-import Reader from '~components/Reader';
+import { getArticles, getArticle } from '../api/article';
+import Reader from '../components/Reader';
 import Loading from './Loading';
-import "~styles/history.css"
-import defaultSiteLogo from "data-base64:~assets/default-site-logo.png"
+import type {Article} from '../api/types';
+import "../styles/history.css"
+// import defaultSiteLogo from "../assets/default-site-logo.png" 
 
 const History = () => {
-  const [articles, setArticles] = useState([]);
-  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [selectedArticle, setSelectedArticle] = useState<Article|null>(null);
   const [loading, setLoading] = useState(false)
+  const defaultSiteLogo = ""
 
   // Retrieve articles list in useEffect
   useEffect(() => {
@@ -21,7 +23,7 @@ const History = () => {
     init();
   }, []);
 
-  const handleArticleClick = async (article) => {
+  const handleArticleClick = async (article: Article) => {
     console.log("set article: ", article.title)
     setLoading(true)
     const newArticle = await getArticle(article.id);

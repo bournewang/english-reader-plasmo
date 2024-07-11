@@ -1,42 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { getLookingWords } from '~api/lookingWord';
-import Reader from '~components/Reader';
+import { getLookingWords } from '../api/lookingWord';
+import Reader from '../components/Reader';
+import type { Article, Paragraphs, Word } from '../api/types';
 
 const WordHistory = () => {
-  const [words, setWords] = useState([]);
+  const [words, setWords] = useState<Word[]>([]);
   // const [selectedWord, setSelectedWord] = useState(null);
-  const [article, setArticle] = useState({ id: null, title: null, paragraphs: [], translations: [], unfamiliar_words:[] });
-  // let translations = []
-  // const [selectedWordParagraph, setSelectedWordParagraph] = useState(null);
+  const [article, setArticle] = useState<Article | null>(null);
 
   // Retrieve words list in useEffect
   useEffect(() => {
     const init = async () => {
       const response = await getLookingWords();
       if (response.success) {
-        setWords(response.data);
+        setWords(response.data as Word[]);
       }
     };
     init();
   }, []);
 
-  const handleWordClick = (word) => {
+  const handleWordClick = (word: Word) => {
     console.log("set word: ", word.word)
     // setSelectedWord(word);
-    const paragraphs = []
+    const paragraphs: Paragraphs = {};
     paragraphs["0"] = "..."
     paragraphs[word.paragraph_id] = word.paragraph_text
-    paragraphs["-"] = "..."
+    paragraphs["-1"] = "..."
+    // new an Article and assign data
     const article = {
-      id: word.article_id,
-      title: word.article_title,
-      paragraphs: paragraphs,
-      unfamiliar_words: [word.word],
-      translations: []
-    };
+      'id': word.article_id,
+      'user_id': null,
+      'title': word.article_title,
+      'word_count': 0,
+      'author': null,
+      'url': null,
+      'site': null,
+      'site_name': null,
+      'site_icon': null,
+      'created_at': null,
+      // paragraphs is an mapping with paragraph id to paragraph text
+      'paragraphs': paragraphs,
+      'unfamiliar_words': [word.word]
+  }
     // console.log()
     setArticle(article)
-    // setSelectedWordParagraph(word.paragraph_text);
   };
   return (
     <div className="flex">
