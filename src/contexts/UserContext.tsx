@@ -3,13 +3,7 @@ import type { ReactNode } from 'react';
 // import { attachTokenInterceptor } from '../api/api';
 import getStorage from '../api/storage';
 import type { StorageValue } from '../api/storage';
-
-interface User {
-  id: number;
-  email: string;
-  premium: boolean;
-  expires_at: string;
-}
+import type { User } from '../api/types';
 
 interface UserContextType {
   user: User | null;
@@ -39,20 +33,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const storage = getStorage();
 
-  useEffect(() => {  
+  useEffect(() => {
     const init = async () => {
-    storage.getItem<StorageValue>('user')
-    .then((result) => {
-      if (typeof result === 'object' && isUser(result))
-        setUser(result);
-    });
-    storage.getItem<StorageValue>('accessToken')
-    .then((token) => {
-      if (typeof token === 'string') {
-        setAccessToken(token);
-        // attachTokenInterceptor(token);
-      }
-    })
+      storage.getItem<StorageValue>('user')
+        .then((result) => {
+          if (typeof result === 'object' && isUser(result))
+            setUser(result);
+        });
+      storage.getItem<StorageValue>('accessToken')
+        .then((token) => {
+          if (typeof token === 'string') {
+            setAccessToken(token);
+            // attachTokenInterceptor(token);
+          }
+        })
     }
     init()
   }, []);

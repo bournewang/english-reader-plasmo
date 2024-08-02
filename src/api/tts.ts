@@ -1,47 +1,35 @@
-// import '../jsbrowserpackageraw.js';
-// import { SpeechSynthesizer, SpeechConfig, SpeechSynthesisResult, ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
+// Import the Azure Speech SDK
+import * as sdk from 'microsoft-cognitiveservices-speech-sdk';
 
-// export class SpeechSynthesizerSingleton {
-//   private static instance: SpeechSynthesizer | null = null;
+// Your Azure subscription key and service region
+const subscriptionKey = process.env.REACT_APP_TTS_API_KEY;
+const serviceRegion = process.env.REACT_APP_TTS_LOCATION; // e.g., 'eastus'
 
-//   private constructor() {}
-
-//   public static getInstance(): SpeechSynthesizer {
-//     if (!SpeechSynthesizerSingleton.instance) {
-//       const sdk = (window as any).SpeechSDK;
-//       const subscriptionKey = process.env.REACT_APP_TTS_API_KEY || '';
-//       const location = process.env.REACT_APP_TTS_LOCATION || '';
-//     //   const subscriptionKey = 'f6e22df4e31f4700a7d99201d9a01796'
-//     //   const location = 'eastasia' 
-//       if (sdk && subscriptionKey && location) {
-//         const speechConfig = SpeechConfig.fromSubscription(subscriptionKey, location);
-//         SpeechSynthesizerSingleton.instance = new sdk.SpeechSynthesizer(speechConfig);
-//       } else {
-//         throw new Error('Failed to initialize the speech SDK or environment variables are not set');
-//       }
-//     }
-//     return SpeechSynthesizerSingleton.instance as SpeechSynthesizer; 
-//   }
-// }
-
-// export function speakText(text: string) {
-//   const synthesizer = SpeechSynthesizerSingleton.getInstance();
-
-//   synthesizer.speakTextAsync(
-//     text,
-//     (result: SpeechSynthesisResult) => {
-//       if (window.SpeechSDK && result.reason === ResultReason.SynthesizingAudioCompleted) {
-//         console.log('Synthesis finished.');
-//       } else {
-//         console.error('Speech synthesis canceled: ' + result.errorDetails);
-//       }
-//     },
-//     (error: any) => {
-//       console.error(error);
-//     }
-//   );
-// }
-
+// Function to convert text to speech
 export function speakText(text: string) {
-    console.log(text)
+    // Create an instance of the speech config with your subscription key and service region
+    const speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+    
+    // Create a speech synthesizer using the speech config
+    const synthesizer = new sdk.SpeechSynthesizer(speechConfig);
+
+    // Speak the text
+    synthesizer.speakTextAsync(
+        text,
+        result => {
+            if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+                console.log('Synthesis finished.');
+            } else {
+                console.error('Speech synthesis canceled, ' + result.errorDetails);
+            }
+            synthesizer.close();
+        },
+        error => {
+            console.error('Error: ', error);
+            synthesizer.close();
+        }
+    );
 }
+
+// Example usage
+// speechText('Hello, this is a text to speech example using Azure Speech SDK.');

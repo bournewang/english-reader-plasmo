@@ -1,36 +1,12 @@
-import axios from 'axios';
-
-const BASE_API_URL = process.env.REACT_APP_API_URL;
-// const BASE_API_URL = "http://127.0.0.1:5000"
-import { apiRequest } from './helper';
-import type { Locale } from './types';
-
+import { apiRequest, ResponseData } from './helper';
+import type { Locale, User } from './types';
 
 export const registerUser = async (email: string, password: string) => {
-    try {
-      const response = await axios.post(`${BASE_API_URL}/auth/register`, { email, password });
-      console.log("response: ", response);
-      return response.data;
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response.data;
-      } else {
-        throw new Error('An unknown error occurred');
-      }
-    }
+    return apiRequest('/auth/register', 'post', {email, password})
   };
   
-  export const loginUser = async (email: string, password: string) => {
-    try {
-      const response = await axios.post(`${BASE_API_URL}/auth/login`, { email, password });
-      return response.data;
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw error.response?.data;
-      } else {
-        throw new Error('An unknown error occurred');
-      }
-    }
+  export const loginUser = async (email: string, password: string):Promise<ResponseData<{access_token: string, user: User}>> => {
+    return apiRequest<{access_token: string, user: User}>('/auth/login', 'post', {email, password})
   };
 
 export const userInfo = async () => {

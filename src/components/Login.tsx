@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import Register from './Register';
 import { loginUser } from '../api/user';
 import { useUser } from '../contexts/UserContext';
+import type { User } from '../api/types';
 import "../styles/tailwind.css"
 
 const Login: React.FC = () => {
@@ -27,10 +28,13 @@ const Login: React.FC = () => {
         e.preventDefault();
         try {
             const response = await loginUser(emailInput, password);
-            if (response.access_token)
-                setAccessToken(response.access_token);
-            if (response.user)
-                setUser(response.user);
+            const data = response.data;
+            if (data) {
+                if (data.access_token)
+                    setAccessToken(data.access_token);
+                if (data.user)
+                    setUser(data.user);
+            }
             // window.location.reload()
         } catch (error) {
             // setError(error.message || 'Login failed');

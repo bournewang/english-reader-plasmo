@@ -168,3 +168,10 @@ export interface Stats {
     total_articles: number;
     total_articles_change: number;
   }
+
+export interface Idiom {
+    content: string;
+    type: string;
+    explain: string;
+    explain_1: string;
+}  

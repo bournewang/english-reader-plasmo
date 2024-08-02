@@ -7,7 +7,11 @@ import type { StorageValue } from "./storage"
 import axios from 'axios';
 import type { Method } from 'axios';
 
-const BASE_API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const BASE_API_URL = process.env.REACT_APP_API_URL 
+//PLASMO_PUBLIC_BASE_API_URL;
+// || 'http://localhost:5000';
+
+console.log("base url: ", BASE_API_URL)
 
 export type RequestData = string | number | object | undefined;
 export interface ResponseData<T = any> {
